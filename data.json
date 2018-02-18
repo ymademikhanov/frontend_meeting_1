@@ -1,0 +1,52 @@
+data = {
+   "lines":[
+      "package main;",
+      "",
+      "import java.util.ArrayList;",
+      "",
+      "import com.google.gson.Gson;",
+      "",
+      "public class Main {",
+      "\tpublic static void main(String[] args) {",
+      "\t\tComment comment1 \u003d new Comment(\"This method is unnecessary.\", \"yamdemikhanov\", 1, 7);",
+      "\t\tComment comment2 \u003d new Comment(\"The class coherenece is weak.\", \"leha.raketa96\", 3, 10);",
+      "\t\t",
+      "\t\t",
+      "\t\tCoommentedCode code \u003d new CommentedCode(\"\");",
+      "\t\t",
+      "\t\tGson gson \u003d new Gson();",
+      "\t\t",
+      "\t\tString result \u003d gson.toJson(code);",
+      "\t\t",
+      "\t\tSystem.out.print(result);",
+      "\t\t",
+      "\t}",
+      "}"
+   ],
+   "comments":[
+       {
+          "start": 3,
+          "end":8,
+          "author":"ibro",
+          "comment":"This method is ibros."
+      },
+      {
+         "start":3,
+         "end":10,
+         "author":"leha.raketa96",
+         "comment":"The class coherenece is weak."
+     },
+     {
+        "start": 1,
+        "end":10,
+        "author":"naz",
+        "comment":"This method is nazs."
+    },
+     {
+        "start":1,
+        "end":7,
+        "author":"yamdemikhanov",
+        "comment":"This method is unnecessary."
+     }
+   ]
+}

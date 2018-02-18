@@ -1,0 +1,95 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <!-- <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autorun=true;callback=checkitout"></script> -->
+
+
+    <script type="text/javascript" src="prettify.js"></script>
+	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"
+      rel="stylesheet">
+
+    <link href="pretty_style.css" rel="stylesheet">
+
+    <script type="text/javascript" src="data.json"></script>
+
+</head>
+
+<body>
+
+    <div id ="maincode" style="font-family:consolas">
+    </div>
+
+</body>
+
+</html>
+
+<script>
+    REUSABLES = {
+        generateCodeline: function(content, lineNumber) {
+            var $li = $("<li>").addClass("codeline");
+            $li.append(content);
+            $li.attr('id', lineNumber);
+            return $li;
+        },
+        generateCommentLine: function(comment) {
+            var $div = $("<div>").addClass("codecomment");
+            $div.css({"background": "yellow", "border": "orange solid 1px", "margin": "1px", "color": "black"});
+            $div.text(comment['comment']);
+            return $div;
+        }
+    }
+
+    var comments = [];
+
+    function SortByEndline(a, b){
+        var aIndex = a['end'];
+        var bIndex = b['end'];
+        return ((aIndex < bIndex) ? -1 : ((aIndex > bIndex) ? 1 : 0));
+    }
+
+    function loadAndSortComments(data) {
+            $.each( data, function( key, val ) {
+                comments.push(val);
+            })
+
+            comments.sort(SortByEndline);
+    };
+
+    loadAndSortComments(data['comments']);
+
+    function loadLines (data) {
+        var $ol = $("<ol>").addClass("all_codes").appendTo("#maincode");
+        var lineNumber = 1;
+        var currentComment = 0;
+        $.each( data, function( key, val ) {
+            var $pre = $("<pre>").addClass("prettyprint");
+            var $li = REUSABLES.generateCodeline(val, lineNumber).appendTo($pre);
+            $li.css({"margin" : "0px"});
+
+            PR.prettyPrint();
+
+            $ol.append($pre);
+
+            // $ol.last().remove();
+            // $ol.append($li);
+            console.log($pre.clone());
+
+            while(currentComment < comments.length && comments[currentComment]["end"] == lineNumber) {
+                $ol.append(REUSABLES.generateCommentLine(comments[currentComment]));
+                currentComment += 1;
+            }
+
+
+            console.log("new line");
+            lineNumber = lineNumber + 1;
+        })
+
+    };
+
+    loadLines(data["lines"]);
+    function checkitout() {
+        console.log("success");
+        console.log($("#maincode").html());
+    };
+</script>
