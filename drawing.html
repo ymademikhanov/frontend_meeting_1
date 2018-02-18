@@ -4,6 +4,9 @@
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
     <!-- <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autorun=true;callback=checkitout"></script> -->
 
+    <style>
+        pre {tab-size: 4;}
+    </style>
 
     <script type="text/javascript" src="prettify.js"></script>
 	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"
@@ -17,7 +20,7 @@
 
 <body>
 
-    <div id ="maincode" style="font-family:consolas">
+    <div id ="maincode" style="font-family:consolas; margin: auto; width: 60%; margin-top: 30px; background: #f4fbf4; padding: 10px">
     </div>
 
 </body>
@@ -28,14 +31,19 @@
     REUSABLES = {
         generateCodeline: function(content, lineNumber) {
             var $li = $("<li>").addClass("codeline");
+            $li.css({"margin" : "0px"});
             $li.append(content);
-            $li.attr('id', lineNumber);
+            // $li.attr('id', lineNumber);
             return $li;
         },
         generateCommentLine: function(comment) {
             var $div = $("<div>").addClass("codecomment");
-            $div.css({"background": "yellow", "border": "orange solid 1px", "margin": "1px", "color": "black"});
-            $div.text(comment['comment']);
+            $div.css({"background": "yellow", "padding" : "1px 5px 1px 5px", "margin": "2px", "box-shadow": "1px 2px 1px 1px #F6D946"});
+             // "border": "orange solid 0.5px",
+            var $span = $("<b>").appendTo($div);
+            $span.css({"color" : "purple"});
+            $span.text(comment["author"]);
+            $div.append(" - " + comment['comment']);
             return $div;
         }
     }
@@ -65,23 +73,13 @@
         $.each( data, function( key, val ) {
             var $pre = $("<pre>").addClass("prettyprint");
             var $li = REUSABLES.generateCodeline(val, lineNumber).appendTo($pre);
-            $li.css({"margin" : "0px"});
-
             PR.prettyPrint();
-
             $ol.append($pre);
-
-            // $ol.last().remove();
-            // $ol.append($li);
-            console.log($pre.clone());
-
+            var $li2 = $pre.children();
             while(currentComment < comments.length && comments[currentComment]["end"] == lineNumber) {
                 $ol.append(REUSABLES.generateCommentLine(comments[currentComment]));
                 currentComment += 1;
             }
-
-
-            console.log("new line");
             lineNumber = lineNumber + 1;
         })
 
