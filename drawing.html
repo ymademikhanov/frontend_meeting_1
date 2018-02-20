@@ -2,48 +2,46 @@
 <head>
 	<meta charset="UTF-8">
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <!-- <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?autorun=true;callback=checkitout"></script> -->
-
-    <style>
-        pre {tab-size: 4;}
-    </style>
-
-    <script type="text/javascript" src="prettify.js"></script>
-	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"
       rel="stylesheet">
-
-    <link href="pretty_style.css" rel="stylesheet">
-
+    <script type="text/javascript" src="prettify.js"></script>
     <script type="text/javascript" src="data.json"></script>
-
+    <link href="pretty_style.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
 </head>
 
-<body>
-
-    <div id ="maincode" style="font-family:consolas; margin: auto; width: 60%; margin-top: 30px; background: #f4fbf4; padding: 10px">
-    </div>
-
-</body>
-
+    <body>
+        <div id ="maincode">
+        </div>
+    </body>
 </html>
 
 <script>
-    REUSABLES = {
-        generateCodeline: function(content, lineNumber) {
-            var $li = $("<li>").addClass("codeline");
-            $li.css({"margin" : "0px"});
-            $li.append(content);
-            // $li.attr('id', lineNumber);
-            return $li;
+    const TAG_LI = "<li>";
+    const TAG_DIV = "<div>";
+    const TAG_OL = "<ol>";
+    const TAG_BOLD = "<b>";
+    const TAG_PRE = "<pre>";
+
+    REUSE = {
+        createCodeLine: function(content, lineNumber) {
+            return $(TAG_LI).addClass("codeline").append(content);
         },
-        generateCommentLine: function(comment) {
-            var $div = $("<div>").addClass("codecomment");
-            $div.css({"background": "yellow", "padding" : "1px 5px 1px 5px", "margin": "2px", "box-shadow": "1px 2px 1px 1px #F6D946"});
-             // "border": "orange solid 0.5px",
-            var $span = $("<b>").appendTo($div);
-            $span.css({"color" : "purple"});
-            $span.text(comment["author"]);
-            $div.append(" - " + comment['comment']);
+        createCommentLine: function(data) {
+            var $div = $(TAG_DIV).addClass("codecomment");
+            var $span = $(TAG_BOLD).appendTo($div).css({"color" : "purple"});
+            $span.text(data["author"]);
+            
+            $div.append(" - " + data['comment']);
+            $div.data("multiply", 5);
+			$div.data("full_comment", data['comment']);
+
+			$div.on("click", function() {
+                var multiply = $(this).data("multiply");
+				$(this).height($(this).height() * multiply);
+                $(this).data("multiply", 1 / multiply);
+			})
+
             return $div;
         }
     }
@@ -51,8 +49,7 @@
     var comments = [];
 
     function SortByEndline(a, b){
-        var aIndex = a['end'];
-        var bIndex = b['end'];
+        var aIndex = a['end'], bIndex = b['end'];
         return ((aIndex < bIndex) ? -1 : ((aIndex > bIndex) ? 1 : 0));
     }
 
@@ -60,34 +57,26 @@
             $.each( data, function( key, val ) {
                 comments.push(val);
             })
-
             comments.sort(SortByEndline);
     };
 
     loadAndSortComments(data['comments']);
 
-    function loadLines (data) {
-        var $ol = $("<ol>").addClass("all_codes").appendTo("#maincode");
-        var lineNumber = 1;
-        var currentComment = 0;
+    function loadLines (data, parent) {
+        var $ol = $(TAG_OL).appendTo(parent);
+        var line = 1;
+        var current = 0;
         $.each( data, function( key, val ) {
-            var $pre = $("<pre>").addClass("prettyprint");
-            var $li = REUSABLES.generateCodeline(val, lineNumber).appendTo($pre);
-            PR.prettyPrint();
-            $ol.append($pre);
-            var $li2 = $pre.children();
-            while(currentComment < comments.length && comments[currentComment]["end"] == lineNumber) {
-                $ol.append(REUSABLES.generateCommentLine(comments[currentComment]));
-                currentComment += 1;
+            var $pre = $(TAG_PRE).addClass("prettyprint").appendTo($ol);
+            $pre.append(REUSE.createCodeLine(val, line));
+            while(current < comments.length && comments[current]["end"] == line) {
+                $ol.append(REUSE.createCommentLine(comments[current]));
+                current += 1;
             }
-            lineNumber = lineNumber + 1;
+            line += 1;
         })
-
+        PR.prettyPrint();
     };
 
-    loadLines(data["lines"]);
-    function checkitout() {
-        console.log("success");
-        console.log($("#maincode").html());
-    };
+    loadLines(data["lines"], "#maincode");
 </script>
